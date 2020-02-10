@@ -1,6 +1,7 @@
 import { MensagemView, NegociacoesView } from '../views/index';
-import { Negociacao, Negociacoes } from '../models/index';
-import { LogarTempoExecucao, DOMInject } from '../helpers/decorators/index';
+import { NegociacaoParcial, Negociacao, Negociacoes } from '../models/index';
+import { DOMInject, Throttle } from '../helpers/decorators/index';
+import { NegociacaoService } from '../services/index';
 
 export class NegociacaoController {
     @DOMInject('#data')
@@ -11,6 +12,7 @@ export class NegociacaoController {
     
     @DOMInject('#valor')
     private _inputValor: JQuery;
+    private _service = new NegociacaoService();
     private _negociacoes = new Negociacoes();
     private _negociacoesView = new NegociacoesView('#negociacoesView');
     private _mensagemView = new MensagemView('#mensagemView');
@@ -22,9 +24,9 @@ export class NegociacaoController {
         this._negociacoesView.update(this._negociacoes);
     }
 
+    @Throttle()
     adiciona(event: Event): void {
-        event.preventDefault();
-
+        // event.preventDefault();
         let data = new Date(this._inputData.val().replace(/-/g, ','));
 
         if (!this._isBusinessDay(data)) {
@@ -53,6 +55,15 @@ export class NegociacaoController {
 
     private _isBusinessDay(date: Date): boolean {
         return date.getDay() != DayOfWeek.SABADO && date.getDay() != DayOfWeek.DOMINGO;
+    }
+
+    @Throttle()
+    async importaDados() {
+        let negociacoes = await this._service.getNegociacoes(res => {
+            console.log('Entrou');
+            if (res.ok) return res;
+            throw new Error(res.statusText);
+        });
     }
 }
 
