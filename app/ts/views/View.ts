@@ -1,3 +1,5 @@
+import { LogarTempoExecucao } from "../helpers/decorators/index";
+
 // declare var $: any;
 export abstract class View<T> {
     private _element: JQuery;
@@ -13,6 +15,7 @@ export abstract class View<T> {
         this._scape = scape;
     }
 
+    @LogarTempoExecucao(true)
     update(model: T): void {
         let element = this.template(model);
         if (this._scape)

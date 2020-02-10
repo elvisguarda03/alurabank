@@ -1,18 +1,24 @@
 import { MensagemView, NegociacoesView } from '../views/index';
 import { Negociacao, Negociacoes } from '../models/index';
+import { LogarTempoExecucao, DOMInject } from '../helpers/decorators/index';
 
 export class NegociacaoController {
+    @DOMInject('#data')
     private _inputData: JQuery;
+    
+    @DOMInject('#quantidade')
     private _inputQuantidade: JQuery;
+    
+    @DOMInject('#valor')
     private _inputValor: JQuery;
     private _negociacoes = new Negociacoes();
     private _negociacoesView = new NegociacoesView('#negociacoesView');
     private _mensagemView = new MensagemView('#mensagemView');
 
     constructor () {
-        this._inputData = $('#data');
-        this._inputQuantidade = $('#quantidade');
-        this._inputValor = $('#valor');
+        // this._inputData = $('#data');
+        // this._inputQuantidade = $('#quantidade');
+        // this._inputValor = $('#valor');
         this._negociacoesView.update(this._negociacoes);
     }
 
@@ -21,7 +27,7 @@ export class NegociacaoController {
 
         let data = new Date(this._inputData.val().replace(/-/g, ','));
 
-        if (this._isBusinessDay(data)) {
+        if (!this._isBusinessDay(data)) {
             this._mensagemView.update('Somente negociações em dias úteis, por favor!');
             return;
         }
